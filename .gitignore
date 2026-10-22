@@ -1,0 +1,30 @@
+# ── Secretos y estado local: NUNCA al repositorio ─────────────────────────────
+# app/.env guarda la llave de la API (copia app/.env.example y rellénalo).
+app/.env
+# Caché de la presentación del agente.
+app/.presentacion.json
+# Permisos locales de Claude Code.
+.claude/settings.local.json
+
+# ── Dependencias y entornos (se reinstalan con npm run setup y pip install) ───
+node_modules/
+.venv/
+__pycache__/
+
+# ── Salidas pesadas de cada corrida (capturas, trazas, reportes HTML) ─────────
+# Los archivos de texto que genera el agente en qa/ y tests/ sí se pueden versionar;
+# el ciclo real de referencia está en resultados/.
+qa/evidencia/
+qa/reporte-html/
+qa/historial/
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# ── Sistema operativo y editores ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+
+# Instrucciones locales para la subida inicial (bórralo después)
+SUBIR-A-GITHUB.txt

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agente Virtual de QA</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23D97757'/%3E%3Cpath d='M9 16.5l5 5 9-10' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <script>
+    // Aplica el tema guardado antes de pintar, para que no parpadee.
+    try { var t = localStorage.getItem('qa-tema'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ui/estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <span class="marca-icono" aria-hidden="true"></span>
+      <span class="marca-nombre">Agente Virtual de QA</span>
+      <span class="modo" id="modo" title="Modo de ejecución">…</span>
+    </div>
+    <button class="aplicacion" id="btn-aplicacion" type="button" title="Ver o cambiar la aplicación bajo prueba">
+      <span class="aplicacion-nombre" id="app-nombre">…</span>
+      <span class="aplicacion-url" id="app-url"></span>
+    </button>
+    <div class="cabecera-acciones">
+      <button class="boton boton-icono" id="btn-tema" type="button" title="Cambiar tema" aria-label="Cambiar tema"></button>
+      <button class="boton" id="btn-reiniciar" type="button">Nuevo ciclo</button>
+    </div>
+  </header>
+
+  <nav class="progreso" id="progreso" aria-label="Progreso del ciclo"></nav>
+
+  <main class="hilo-panel">
+    <ol class="hilo" id="hilo"></ol>
+    <div class="redactor" id="redactor">
+      <form class="redactor-form" id="form-mensaje" autocomplete="off">
+        <input id="mensaje" type="text" placeholder="Pregúntale al agente sobre la aplicación o los hallazgos del ciclo… (por ejemplo: ¿por qué falló CP-05?)" aria-label="Mensaje al agente">
+        <button class="boton boton-primario" type="submit" id="btn-enviar" aria-label="Enviar">Enviar</button>
+        <button class="boton boton-peligro" type="button" id="btn-cancelar" hidden>Detener</button>
+      </form>
+      <p class="redactor-pie" id="redactor-pie"></p>
+    </div>
+  </main>
+
+  <dialog class="dialogo" id="dialogo-requisitos">
+    <form method="dialog" class="dialogo-contenido" id="form-requisitos">
+      <h2>Aplicación bajo prueba</h2>
+      <p>Estos son los requisitos que lee el agente (<code>qa/requisitos.md</code>). Cambia la aplicación, la URL, los usuarios o los requisitos y guarda.</p>
+      <textarea id="requisitos-texto" rows="22" spellcheck="false"></textarea>
+      <div class="dialogo-acciones">
+        <button class="boton" type="button" id="btn-requisitos-cerrar">Cancelar</button>
+        <button class="boton boton-primario" type="submit">Guardar requisitos</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo" id="dialogo-historia">
+    <form method="dialog" class="dialogo-contenido" id="form-historia">
+      <h2>Partir de una historia de usuario</h2>
+      <p>El plan de pruebas se derivará de la historia y de sus criterios de aceptación: al menos un caso por criterio. La exploración aporta las pantallas y los datos.</p>
+      <label class="etiqueta" for="historia-titulo">Título</label>
+      <input id="historia-titulo" type="text" placeholder="Por ejemplo: Compra de un producto con tarjeta">
+      <label class="etiqueta" for="historia-texto" style="margin-top:10px">Historia</label>
+      <textarea id="historia-texto" rows="4" placeholder="Como cliente registrado, quiero completar la compra de un producto, para recibirlo en mi dirección."></textarea>
+      <label class="etiqueta" for="historia-criterios" style="margin-top:10px">Criterios de aceptación (uno por línea)</label>
+      <textarea id="historia-criterios" rows="6" placeholder="El resumen muestra subtotal, impuesto y total&#10;Nombre, apellido y código postal son obligatorios&#10;Al finalizar se muestra la confirmación «Thank you for your order!»"></textarea>
+      <div class="dialogo-acciones">
+        <button class="boton" type="button" id="btn-historia-cerrar">Cancelar</button>
+        <button class="boton boton-primario" type="submit">Guardar historia</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo" id="dialogo-motivo">
+    <form method="dialog" class="dialogo-contenido" id="form-motivo">
+      <h2 id="motivo-titulo">Descartar defecto</h2>
+      <p id="motivo-texto"></p>
+      <label class="etiqueta" for="motivo">Motivo (queda en el defecto y en el reporte)</label>
+      <input id="motivo" type="text" placeholder="Por ejemplo: fuera de alcance de esta versión">
+      <div class="dialogo-acciones">
+        <button class="boton" type="button" id="btn-motivo-cerrar">Cancelar</button>
+        <button class="boton boton-primario" type="submit" id="btn-motivo-ok">Descartar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo dialogo-confirmar" id="dialogo-confirmar">
+    <form method="dialog" class="dialogo-contenido" id="form-confirmar">
+      <h2 id="confirmar-titulo">¿Seguro?</h2>
+      <p id="confirmar-texto"></p>
+      <div class="dialogo-acciones">
+        <button class="boton" type="button" id="btn-confirmar-cerrar">Cancelar</button>
+        <button class="boton boton-primario" type="submit" id="btn-confirmar-ok">Continuar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo dialogo-imagen" id="dialogo-imagen">
+    <img id="imagen-grande" alt="Evidencia">
+    <form method="dialog"><button class="boton" type="submit">Cerrar</button></form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="/ui/marked.umd.js"></script>
+  <script src="/ui/app.js"></script>
+</body>
+</html>
