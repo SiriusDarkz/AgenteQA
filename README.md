@@ -307,9 +307,3 @@ No está en el repositorio (lo excluye `.gitignore`): `app/.env` con la llave, `
 
 ---
 
-## 12. Para la presentación
-
-- **Ensaya una vez completo** con el agente real, con tiempo, el día anterior.
-- **Plan B:** si falla la red o la API, `python3 -m app --demo` se ve igual, con el ciclo de ejemplo. Para que la demo use un ensayo real en lugar del ejemplo: `python3 -m app.guardar_ejemplos` después del ensayo.
-- **Sin instalar nada**, en cualquier computadora: abre `app/ejemplos/demo-web.html` con doble clic. Es la misma interfaz con el ciclo de ejemplo adentro; no necesita Python, Node ni internet.
-- **Guion sugerido (10 minutos):** los cinco pasos y las dos decisiones (1 min); exploración mientras se ve al agente navegar (2 min); plan, quitar un caso en vivo y aprobar (2 min); ejecución y resultados, subrayando que los casos con `problem_user` fallan porque la prueba describe el requisito, no lo que hace la aplicación (3 min); confirmar un defecto con su captura (1 min); reporte con el semáforo y la métrica de casos aceptados sin edición, la del hito 1 del caso de negocio (1 min). Cierre: `npx playwright test` en la terminal; las pruebas corren sin el agente.
