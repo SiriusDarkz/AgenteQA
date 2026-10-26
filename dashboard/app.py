@@ -157,17 +157,26 @@ def histograma(h: dict, marcas: list, titulo_x: str, escala: float = 1e6, format
 
 
 def tornado(t: dict) -> go.Figure:
+    # Cada barra va del VAN con el valor desfavorable al VAN con el favorable (P10 o P90 según la variable).
+    # El tramo bajo el escenario base va en naranja y el tramo sobre él, en azul: en el precio, hasta el
+    # valor favorable queda bajo la base, porque la base supone que no hay descuentos.
     filas = t["filas"][::-1]
     base = t["van_base"] / 1e6
     fig = go.Figure()
-    fig.add_trace(go.Bar(y=[f["variable"] for f in filas], x=[f["van_desfavorable"] / 1e6 - base for f in filas], base=base,
-                         orientation="h", marker_color=ROJO, name="Valor desfavorable (P10)", width=0.5,
-                         customdata=[f["valor_desfavorable"] for f in filas],
-                         hovertemplate="%{y}: %{customdata:.2f}<br>VAN con valor terminal: USD %{x:.2f} M<extra></extra>"))
-    fig.add_trace(go.Bar(y=[f["variable"] for f in filas], x=[f["van_favorable"] / 1e6 - base for f in filas], base=base,
-                         orientation="h", marker_color=AZUL, name="Valor favorable (P90)", width=0.5,
-                         customdata=[f["valor_favorable"] for f in filas],
-                         hovertemplate="%{y}: %{customdata:.2f}<br>VAN con valor terminal: USD %{x:.2f} M<extra></extra>"))
+    nombres = [f["variable"] for f in filas]
+    bajo_ini, bajo_largo, sobre_ini, sobre_largo, datos = [], [], [], [], []
+    for f in filas:
+        lo, hi = f["van_desfavorable"] / 1e6, f["van_favorable"] / 1e6
+        a, z = min(lo, hi), max(lo, hi)
+        bajo_ini.append(a); bajo_largo.append(max(0.0, min(z, base) - a))
+        sobre_ini.append(max(a, base)); sobre_largo.append(max(0.0, z - max(a, base)))
+        datos.append([f["valor_desfavorable"], lo, f["valor_favorable"], hi])
+    ayuda = ("%{y}<br>Desfavorable (%{customdata[0]:.2f}): USD %{customdata[1]:.2f} M"
+             "<br>Favorable (%{customdata[2]:.2f}): USD %{customdata[3]:.2f} M<extra></extra>")
+    fig.add_trace(go.Bar(y=nombres, x=bajo_largo, base=bajo_ini, orientation="h", marker_color=NARANJA, width=0.5,
+                         name="Por debajo del escenario base", customdata=datos, hovertemplate=ayuda))
+    fig.add_trace(go.Bar(y=nombres, x=sobre_largo, base=sobre_ini, orientation="h", marker_color=AZUL, width=0.5,
+                         name="Por encima del escenario base", customdata=datos, hovertemplate=ayuda))
     fig.add_vline(x=base, line=dict(color=TINTA, width=1))
     fig.add_annotation(x=base, y=1.0, yref="paper", text=f"Base: USD {base:.2f} M", showarrow=False, yanchor="bottom",
                        font=dict(size=11, color=SECUNDARIA))
@@ -432,8 +441,8 @@ with tab_sim:
     st.markdown("**Riesgos del caso de negocio, con probabilidad e impacto**")
     st.dataframe(pd.DataFrame([{
         "Riesgo": f["riesgo"], "Probabilidad": pct(f["probabilidad"]),
-        "Recupera en 60 meses si ocurre": pct(f["recupera_si_ocurre"]), "… si no ocurre": pct(f["recupera_si_no"]),
-        "Cumple el hito 2 si ocurre": pct(f["hito2_si_ocurre"]), "… si no ocurre": pct(f["hito2_si_no"]),
+        "Recupera en 60 meses si ocurre": pct(f["recupera_si_ocurre"]), "Recupera si no ocurre": pct(f["recupera_si_no"]),
+        "Cumple el hito 2 si ocurre": pct(f["hito2_si_ocurre"]), "Hito 2 si no ocurre": pct(f["hito2_si_no"]),
         "Necesidad de caja (mediana) si ocurre": usd(f["necesidad_p50_si_ocurre"]),
     } for f in a["riesgos"]]), hide_index=True, width="stretch")
     izq, der = st.columns(2)
@@ -479,7 +488,7 @@ with tab_cliente:
     cuentas, bordes = np.histogram(np.clip(roi, -1, 6), bins=40)
     centros = (bordes[:-1] + bordes[1:]) / 2
     fig = go.Figure(go.Bar(x=centros, y=cuentas / cuentas.sum(), width=(bordes[1] - bordes[0]) * 0.92,
-                           marker_color=[ROJO if x < 0 else AZUL for x in centros],
+                           marker_color=[NARANJA if x < 0 else AZUL for x in centros],
                            hovertemplate="Retorno %{x:.0%}<br>%{y:.1%} de los clientes<extra></extra>"))
     fig.add_vline(x=0, line=dict(color=TINTA, width=1))
     fig.update_xaxes(tickformat=".0%")
