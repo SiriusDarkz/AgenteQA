@@ -1,0 +1,169 @@
+{
+ "diagnostico": {
+  "cadenas": 4,
+  "muestras_por_cadena": 2000,
+  "calentamiento": 2000,
+  "divergencias": 0,
+  "r_hat_max": 1.000662,
+  "ess_bulk_min": 2866.52431,
+  "parametros": {
+   "mu": {
+    "media": -1.67587,
+    "sd": 0.742346,
+    "r_hat": 1.000459,
+    "ess_bulk": 3220.944336
+   },
+   "sd_defecto": {
+    "media": 2.145106,
+    "sd": 0.75408,
+    "r_hat": 1.000453,
+    "ess_bulk": 3364.8584
+   },
+   "sd_ciclo": {
+    "media": 0.724674,
+    "sd": 0.524601,
+    "r_hat": 1.000662,
+    "ess_bulk": 2866.52431
+   }
+  }
+ },
+ "recall_ciclo_nuevo": {
+  "media": 0.259992,
+  "ic_bajo": 0.077125,
+  "ic_alto": 0.58975
+ },
+ "cobertura_k_ciclos": {
+  "1": {
+   "media": 0.25961,
+   "ic_bajo": 0.081276,
+   "ic_alto": 0.574832
+  },
+  "2": {
+   "media": 0.383504,
+   "ic_bajo": 0.184477,
+   "ic_alto": 0.728119
+  },
+  "3": {
+   "media": 0.463105,
+   "ic_bajo": 0.254664,
+   "ic_alto": 0.798382
+  },
+  "4": {
+   "media": 0.519847,
+   "ic_bajo": 0.309639,
+   "ic_alto": 0.841822
+  },
+  "5": {
+   "media": 0.563327,
+   "ic_bajo": 0.347433,
+   "ic_alto": 0.874244
+  }
+ },
+ "prob_por_defecto": [
+  {
+   "media": 0.113773,
+   "ic_bajo": 0.00059,
+   "ic_alto": 0.49693
+  },
+  {
+   "media": 0.753127,
+   "ic_bajo": 0.24447,
+   "ic_alto": 0.995946
+  },
+  {
+   "media": 0.110448,
+   "ic_bajo": 0.000577,
+   "ic_alto": 0.488487
+  },
+  {
+   "media": 0.537483,
+   "ic_bajo": 0.102581,
+   "ic_alto": 0.954096
+  },
+  {
+   "media": 0.542583,
+   "ic_bajo": 0.107489,
+   "ic_alto": 0.95184
+  },
+  {
+   "media": 0.112112,
+   "ic_bajo": 0.000719,
+   "ic_alto": 0.504671
+  },
+  {
+   "media": 0.112846,
+   "ic_bajo": 0.00063,
+   "ic_alto": 0.494808
+  },
+  {
+   "media": 0.108573,
+   "ic_bajo": 0.000618,
+   "ic_alto": 0.492139
+  },
+  {
+   "media": 0.112248,
+   "ic_bajo": 0.000614,
+   "ic_alto": 0.499565
+  },
+  {
+   "media": 0.110729,
+   "ic_bajo": 0.000589,
+   "ic_alto": 0.493855
+  },
+  {
+   "media": 0.750288,
+   "ic_bajo": 0.240695,
+   "ic_alto": 0.995608
+  },
+  {
+   "media": 0.111443,
+   "ic_bajo": 0.00054,
+   "ic_alto": 0.501197
+  },
+  {
+   "media": 0.112393,
+   "ic_bajo": 0.000719,
+   "ic_alto": 0.49416
+  },
+  {
+   "media": 0.111481,
+   "ic_bajo": 0.00067,
+   "ic_alto": 0.484992
+  },
+  {
+   "media": 0.313979,
+   "ic_bajo": 0.023515,
+   "ic_alto": 0.810363
+  },
+  {
+   "media": 0.11255,
+   "ic_bajo": 0.000544,
+   "ic_alto": 0.503388
+  },
+  {
+   "media": 0.113646,
+   "ic_bajo": 0.000712,
+   "ic_alto": 0.507686
+  },
+  {
+   "media": 0.112956,
+   "ic_bajo": 0.000604,
+   "ic_alto": 0.509739
+  },
+  {
+   "media": 0.313932,
+   "ic_bajo": 0.023099,
+   "ic_alto": 0.819703
+  },
+  {
+   "media": 0.310622,
+   "ic_bajo": 0.026841,
+   "ic_alto": 0.807313
+  },
+  {
+   "media": 0.310479,
+   "ic_bajo": 0.024571,
+   "ic_alto": 0.810289
+  }
+ ]
+}

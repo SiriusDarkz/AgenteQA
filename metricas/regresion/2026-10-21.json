@@ -1,0 +1,12 @@
+{
+ "fecha": "2026-10-21T21:13:26-04:00",
+ "origen": "Ejecución del ciclo A con el agente (paso 3); las corridas siguientes las agrega la regresión nocturna sin el agente",
+ "suite": "resultados/toolshop-2026-10-21",
+ "aplicacion": "https://with-bugs.practicesoftwaretesting.com",
+ "total": 10,
+ "pasaron": 2,
+ "fallaron": 8,
+ "omitidas": 0,
+ "inestables": 0,
+ "segundos": 77.1
+}

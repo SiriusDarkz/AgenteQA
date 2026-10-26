@@ -1,0 +1,83 @@
+# Regresión nocturna: corre, sin el agente y sin IA, las pruebas que el agente escribió en el ciclo real
+# de Toolshop (resultados/toolshop-2026-10-21) y la prueba de humo de Swag Labs. Guarda un resumen en
+# metricas/regresion/AAAA-MM-DD.json, que el tablero (dashboard/app.py) muestra en «Monitoreo del agente».
+#
+# Así se desplegaría en un cliente: las pruebas quedan en su repositorio y su CI las corre en cada cambio.
+# Se esperan 2 pruebas que pasan y 8 que fallan (son defectos conocidos de la versión «with bugs»);
+# si el resultado cambia, el resumen lo marca para revisarlo.
+
+name: Regresión nocturna
+
+on:
+  schedule:
+    - cron: "17 7 * * *"        # todos los días a las 03:17 de Santo Domingo (07:17 UTC)
+  workflow_dispatch:             # también se puede lanzar a mano desde la pestaña Actions
+  push:
+    branches: [main]
+    paths:
+      - "resultados/**"
+      - "tests/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/regresion-nocturna.yml"
+      - "metricas/resumir_regresion.py"
+
+permissions:
+  contents: write                # para guardar el resumen en el repositorio
+
+concurrency:
+  group: regresion-nocturna
+  cancel-in-progress: false
+
+jobs:
+  regresion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Playwright y Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Pruebas del agente sobre Toolshop (sin el agente)
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: regresion-toolshop.json
+        run: npx playwright test --config resultados/toolshop-2026-10-21/playwright.config.ts --reporter=json,list || true
+
+      - name: Prueba de humo sobre Swag Labs
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: regresion-humo.json
+        run: npx playwright test tests/ejemplo.spec.ts --reporter=json,list || true
+
+      - name: Resumir la corrida
+        run: python3 metricas/resumir_regresion.py regresion-toolshop.json regresion-humo.json
+
+      - name: Guardar el resumen en el repositorio
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add metricas/regresion
+          git diff --cached --quiet || git commit -m "Regresión nocturna $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Guardar el reporte HTML de Playwright
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reporte-regresion
+          path: qa/reporte-html/toolshop-rerun
+          retention-days: 14
+          if-no-files-found: ignore

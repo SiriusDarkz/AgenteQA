@@ -1,0 +1,10 @@
+escenario,necesidad_maxima,mes_necesidad,mes_equilibrio,mes_recuperacion,van_con_vt,publicado_necesidad
+base,991523,34,35.0,60.0,1613706,991523
+conservador,1500006,51,52.0,,-970186,1498616
+optimista,685568,28,29.0,44.0,5030860,685568
+precio -20%,1288827,44,45.0,,-277647,1288747
+clientes nuevos -20%,1237122,41,42.0,,61179,1236876
+costo variable 35%,1136977,39,40.0,,580185,1136683
+bajas +50%,1040135,36,37.0,,927874,1040135
+clientes nuevos +20%,800803,31,32.0,50.0,3341925,800803
+precio +20%,791213,30,31.0,49.0,3680750,791213
