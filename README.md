@@ -246,7 +246,7 @@ Debajo hay un modelo de lenguaje, así que en principio podría hablar de cualqu
 2. **El navegador solo abre la aplicación bajo prueba.** Un control del programa (no del modelo) revisa cada navegación y bloquea cualquier dominio que no sea el de `qa/requisitos.md` o el de la URL que escribiste en el paso 1.
 3. **Instrucciones de alcance.** En modo conversación recibe reglas explícitas: solo habla de la aplicación y de los hallazgos, lee los archivos antes de afirmar algo y, ante cualquier otro tema, responde con una sola frase. Esas reglas se arman en cada mensaje con el nombre y la URL de `qa/requisitos.md`, así que valen para cualquier aplicación.
 
-Además, cada mensaje libre tiene un tope de turnos y de gasto (`QA_MAX_TURNOS_CONVERSACION`, por defecto 12, y `QA_PRESUPUESTO_CONVERSACION_USD`, por defecto 1.0).
+Además, cada mensaje libre tiene un tope de turnos y de gasto (`QA_MAX_TURNOS_CONVERSACION`, por defecto 12, y `QA_PRESUPUESTO_CONVERSACION_USD`, por defecto 1.0), y cada paso del ciclo también (`QA_MAX_TURNOS`, por defecto 80, y `QA_PRESUPUESTO_PASO_USD`, por defecto 5.0).
 
 En los pasos del ciclo hay un cuarto control, agregado después de que el agente completara una compra real al explorar Toolshop (factura INV-2026000005): el programa detiene en el navegador del agente cualquier clic o envío que parezca irreversible (pagar, confirmar un pedido, comprar, enviar un mensaje, transferir, borrar una cuenta) y lo anota en `qa/incidentes.md`. Las pruebas del paso 3 no pasan por ese control porque corren con `npx playwright test`. Solo una persona puede habilitar esas acciones, con `QA_PERMITIR_IRREVERSIBLES=1` en `app/.env`; la expresión que las reconoce se puede ajustar con `QA_ACCIONES_IRREVERSIBLES`. El control y sus pruebas están en `app/agente.py` y `app/pruebas/test_compuertas.py`.
 
@@ -270,7 +270,7 @@ Así se hizo el ciclo de Toolshop de `resultados/`. Nunca apuntes el agente a un
 - **La página no abre.** Entra a mano a http://localhost:8765. Si el puerto está ocupado, arranca con `python3 -m app --puerto 9000` y entra a http://localhost:9000.
 - **«Error de la API: authentication_failed».** La llave está mal copiada o no se está leyendo. Abre `app/.env`, comprueba que la línea `ANTHROPIC_API_KEY=sk-ant-...` está completa y vuelve a arrancar.
 - **La exploración (paso 1) dice que no encuentra el navegador.** Ejecuta `npx playwright install chromium` dentro de la carpeta y repite el paso.
-- **El agente se detiene antes de terminar un paso.** Mira su último mensaje y vuelve a pulsar el botón del paso; lo que ya escribió se conserva. Si dice que se quedó sin turnos, agrega `QA_MAX_TURNOS=150` a `app/.env` y vuelve a arrancar.
+- **El agente se detiene antes de terminar un paso.** Mira su último mensaje y vuelve a pulsar el botón del paso; lo que ya escribió se conserva. Si dice que se quedó sin turnos, agrega `QA_MAX_TURNOS=150` a `app/.env` y vuelve a arrancar; si llegó al tope de gasto, sube `QA_PRESUPUESTO_PASO_USD`.
 - **Un paso se queda colgado.** Pulsa **Detener** en la interfaz y repítelo.
 - **Aparece «workspace has not been trusted».** No afecta. Si quieres quitarlo, abre `claude` una vez dentro de la carpeta (si tienes Claude Code) y acepta la confianza.
 - **`git status` muestra archivos nuevos en `qa/` o `tests/` después de correr la demo.** Es normal: son los archivos del ciclo que acabas de correr. Puedes borrarlos, versionarlos o pulsar **Nuevo ciclo**, que los archiva en `qa/historial/` (fuera de git).

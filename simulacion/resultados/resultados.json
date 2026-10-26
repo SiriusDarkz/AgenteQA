@@ -1,5 +1,5 @@
 {
- "generado": "2026-10-26 10:43",
+ "generado": "2026-10-26 11:16",
  "semilla": 20261026,
  "escenarios": [
   {
@@ -3297,37 +3297,85 @@
     "defectos": 3,
     "detectados_union": 1,
     "detecciones": 3,
-    "oportunidades": 9
+    "oportunidades": 9,
+    "tasa": {
+     "exitos": 3,
+     "total": 9,
+     "valor": 0.333333,
+     "media_posterior": 0.363636,
+     "ic_bajo": 0.121552,
+     "ic_alto": 0.652453
+    }
    },
    "R2": {
     "defectos": 2,
     "detectados_union": 1,
     "detecciones": 3,
-    "oportunidades": 6
+    "oportunidades": 6,
+    "tasa": {
+     "exitos": 3,
+     "total": 6,
+     "valor": 0.5,
+     "media_posterior": 0.5,
+     "ic_bajo": 0.184052,
+     "ic_alto": 0.815948
+    }
    },
    "R3": {
     "defectos": 6,
     "detectados_union": 2,
     "detecciones": 4,
-    "oportunidades": 18
+    "oportunidades": 18,
+    "tasa": {
+     "exitos": 4,
+     "total": 18,
+     "valor": 0.222222,
+     "media_posterior": 0.25,
+     "ic_bajo": 0.091466,
+     "ic_alto": 0.455653
+    }
    },
    "R4": {
     "defectos": 7,
     "detectados_union": 2,
     "detecciones": 2,
-    "oportunidades": 21
+    "oportunidades": 21,
+    "tasa": {
+     "exitos": 2,
+     "total": 21,
+     "valor": 0.095238,
+     "media_posterior": 0.130435,
+     "ic_bajo": 0.029056,
+     "ic_alto": 0.291613
+    }
    },
    "R5": {
     "defectos": 1,
     "detectados_union": 1,
     "detecciones": 1,
-    "oportunidades": 3
+    "oportunidades": 3,
+    "tasa": {
+     "exitos": 1,
+     "total": 3,
+     "valor": 0.333333,
+     "media_posterior": 0.4,
+     "ic_bajo": 0.067586,
+     "ic_alto": 0.80588
+    }
    },
    "R6": {
     "defectos": 2,
     "detectados_union": 1,
     "detecciones": 1,
-    "oportunidades": 6
+    "oportunidades": 6,
+    "tasa": {
+     "exitos": 1,
+     "total": 6,
+     "valor": 0.166667,
+     "media_posterior": 0.25,
+     "ic_bajo": 0.036693,
+     "ic_alto": 0.578723
+    }
    }
   },
   "matriz": {

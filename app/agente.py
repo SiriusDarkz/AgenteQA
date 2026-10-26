@@ -400,7 +400,8 @@ class Corredor:
             # nunca los que la persona tenga configurados en su Claude Code (p. ej. su navegador Chrome).
             opciones = ClaudeAgentOptions(**comunes, mcp_servers=mcp if mcp.exists() else {}, strict_mcp_config=True,
                                           allowed_tools=HERRAMIENTAS_PERMITIDAS,
-                                          max_turns=int(os.environ.get("QA_MAX_TURNOS", "80")))
+                                          max_turns=int(os.environ.get("QA_MAX_TURNOS", "80")),
+                                          max_budget_usd=float(os.environ.get("QA_PRESUPUESTO_PASO_USD", "5.0")))
         nombres: dict[str, str] = {}  # tool_use_id -> nombre, para describir resultados
         resultado: dict = {"tipo": "fin", "paso": paso, "ok": False, "resumen": "El agente terminó sin resultado."}
         async for mensaje in query(prompt=prompt, options=opciones):

@@ -94,7 +94,8 @@ def analizar(d: dict | None = None) -> dict:
     for r in sorted(set(requisitos.values())):
         filas = [i for i, k in enumerate(ids) if requisitos[k] == r]
         por_requisito[r] = {"defectos": len(filas), "detectados_union": int(union[filas].sum()),
-                            "detecciones": int(m[filas].sum()), "oportunidades": len(filas) * m.shape[1]}
+                            "detecciones": int(m[filas].sum()), "oportunidades": len(filas) * m.shape[1],
+                            "tasa": intervalo(int(m[filas].sum()), len(filas) * m.shape[1])}
     tope = d["ciclos"][0]["costo_usd_tope"]
     planes = {"Inicial": 490, "Profesional": 1490, "Empresarial": 4900}
     return {
