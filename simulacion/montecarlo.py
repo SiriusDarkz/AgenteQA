@@ -259,6 +259,8 @@ def correlaciones(res: dict) -> list:
                "costo_variable": "Costo variable de IA", "p_piloto": "Conversión de pilotos"}
     filas = []
     for k, etiqueta in nombres.items():
+        if np.ptp(x[k]) == 0:   # supuesto fijo en el tablero (p. ej., sin descuentos): no hay correlación que medir
+            continue
         filas.append(dict(variable=etiqueta,
                           con_van=float(stats.spearmanr(x[k], ind["van_con_vt"]).statistic),
                           con_necesidad=float(stats.spearmanr(x[k], ind["necesidad_maxima"]).statistic)))
