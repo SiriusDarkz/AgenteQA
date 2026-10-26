@@ -28,3 +28,9 @@ Thumbs.db
 
 # Instrucciones locales para la subida inicial (bórralo después)
 SUBIR-A-GITHUB.txt
+
+# Carpeta de entrega para Drive (no va al repositorio)
+entrega/
+
+# Secretos del tablero de Streamlit
+.streamlit/secrets.toml

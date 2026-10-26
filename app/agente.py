@@ -34,6 +34,42 @@ HERRAMIENTAS_CONVERSACION = ["Read", "Glob", "Grep"]
 PRESENTACION = Path(__file__).resolve().parent / ".presentacion.json"
 PROMPT_PRESENTACION = "/inicio desde la interfaz web"
 
+# ---- Control de acciones irreversibles (compuerta humana)
+# En un ciclo real el agente completó una compra al explorar (INV-2026000005). Desde entonces, un control
+# del programa (no del modelo) detiene en el navegador del agente cualquier clic o envío que parezca
+# irreversible: pagar, confirmar un pedido, comprar, enviar un mensaje, transferir, borrar una cuenta.
+# Las pruebas de Playwright (paso 3) no pasan por aquí: corren con `npx playwright test`.
+# Se puede ajustar con QA_ACCIONES_IRREVERSIBLES (expresión regular) o apagar con
+# QA_PERMITIR_IRREVERSIBLES=1, que es una decisión explícita de la persona y queda en el registro.
+PATRON_IRREVERSIBLE = (
+    r"\b(confirm(ar)?|place\s+order|realizar\s+pedido|pay(\s+now)?|pagar|buy(\s+now)?|comprar|"
+    r"finalizar(\s+compra)?|finish|enviar|send|transfer(ir)?|"
+    r"(delete|eliminar|borrar)\s+(account|cuenta))\b"
+)
+HERRAMIENTAS_CON_CLIC = "mcp__playwright__browser_click|mcp__playwright__browser_type|mcp__playwright__browser_press_key"
+INCIDENTES = "incidentes.md"            # en qa/: registro de auditoría de las acciones detenidas
+METRICAS_PASOS = "metricas-pasos.jsonl"  # en qa/: duración, costo y turnos de cada paso del agente
+
+
+def es_irreversible(herramienta: str, entrada: dict, patron: str | None = None) -> str | None:
+    """Devuelve la descripción de la acción si parece irreversible; si no, None.
+
+    - browser_click: se revisa la descripción del elemento («Confirm button», «Pagar ahora»...).
+    - browser_type con submit=true: escribir y enviar el formulario con Enter.
+    - browser_press_key con Enter: puede enviar el formulario que tenga el foco; se detiene solo si la
+      descripción del paso (cuando viene) menciona una acción irreversible.
+    """
+    patron = patron or os.environ.get("QA_ACCIONES_IRREVERSIBLES") or PATRON_IRREVERSIBLE
+    corto = herramienta.rsplit("__", 1)[-1]
+    texto = str(entrada.get("element") or "")
+    if corto == "browser_type" and not entrada.get("submit"):
+        return None
+    if corto == "browser_press_key" and str(entrada.get("key", "")).lower() not in ("enter", "numpadenter"):
+        return None
+    if re.search(patron, texto, flags=re.IGNORECASE):
+        return texto or corto
+    return None
+
 
 def alcance_conversacion(app: dict) -> str:
     """Reglas que se añaden al system prompt cuando la persona escribe un mensaje libre en la interfaz."""
@@ -193,6 +229,59 @@ class Corredor:
                                                                        f"{url} queda fuera del alcance; no insistas con otra URL."}}
         return compuerta
 
+    def _compuerta_irreversible(self, paso: str | None):
+        """Hook PreToolUse para los clics y envíos del navegador: detiene las acciones irreversibles.
+
+        Igual que la compuerta de navegación, es una regla del programa: se aplica aunque el modelo
+        decida otra cosa. Cada bloqueo queda en qa/incidentes.md con la hora, el paso y el elemento.
+        """
+        permitir = os.environ.get("QA_PERMITIR_IRREVERSIBLES") == "1"
+
+        async def compuerta(entrada: dict, _tool_use_id: str | None, _contexto: Any) -> dict:
+            herramienta = str(entrada.get("tool_name", ""))
+            accion = es_irreversible(herramienta, entrada.get("tool_input") or {})
+            if not accion:
+                return {}
+            decision = "permitida por QA_PERMITIR_IRREVERSIBLES=1" if permitir else "detenida"
+            self._registrar_incidente(paso, herramienta, accion, decision)
+            if permitir:
+                return {}
+            self.bus.publicar({"tipo": "sistema", "texto": f"Acción irreversible detenida: «{accion}». Necesita la aprobación de una persona."})
+            return {"hookSpecificOutput": {
+                "hookEventName": "PreToolUse", "permissionDecision": "deny",
+                "permissionDecisionReason": (
+                    f"«{accion}» parece una acción irreversible (pagar, confirmar un pedido, enviar o transferir). "
+                    "No la ejecutes desde el navegador: anota en tu archivo que ese paso existe, qué esperabas ver y "
+                    "que requiere la aprobación de una persona. Las pruebas del paso 3 sí pueden cubrirlo, porque "
+                    "corren en el ambiente de prueba con `npx playwright test`.")}}
+        return compuerta
+
+    def _registrar_incidente(self, paso: str | None, herramienta: str, accion: str, decision: str) -> None:
+        ruta = estado.QA / INCIDENTES
+        try:
+            nuevo = not ruta.exists()
+            with ruta.open("a", encoding="utf-8") as f:
+                if nuevo:
+                    f.write("# Registro de acciones irreversibles\n\n"
+                            "Lo escribe el programa (app/agente.py), no el agente. Una fila por intento detenido o permitido.\n\n"
+                            "| Fecha y hora | Paso | Herramienta | Acción | Decisión |\n|---|---|---|---|---|\n")
+                f.write(f"| {estado.ahora()} | {paso or 'conversación'} | `{herramienta.rsplit('__', 1)[-1]}` | {accion.replace('|', '/')} | {decision} |\n")
+        except OSError:
+            pass
+
+    def _registrar_metricas(self, resultado: dict) -> None:
+        """Guarda la duración, el costo y los turnos de cada paso para el tablero (qa/metricas-pasos.jsonl)."""
+        if resultado.get("paso") in (None, "inicio"):
+            return
+        try:
+            with (estado.QA / METRICAS_PASOS).open("a", encoding="utf-8") as f:
+                f.write(json.dumps({"fecha": estado.ahora(), "paso": resultado.get("paso"), "ok": resultado.get("ok"),
+                                    "duracion_ms": resultado.get("duracion_ms"), "costo_usd": resultado.get("costo_usd"),
+                                    "turnos": resultado.get("turnos"), "modelo": os.environ.get("QA_MODELO") or None},
+                                   ensure_ascii=False) + "\n")
+        except OSError:
+            pass
+
     # ---- presentación (skill /inicio): se pide una vez y se muestra al abrir la interfaz
 
     def clave_presentacion(self) -> str:
@@ -284,8 +373,13 @@ class Corredor:
             permission_mode=os.environ.get("QA_PERMISOS", "bypassPermissions"),
             model=os.environ.get("QA_MODELO") or None,
             stderr=lambda linea: self.bus.publicar({"tipo": "stderr", "texto": linea[:400]}),
-            # Pase lo que pase, el navegador solo abre la aplicación bajo prueba (o la URL que la persona pasó al paso).
-            hooks={"PreToolUse": [HookMatcher(matcher="mcp__playwright__browser_navigate", hooks=[self._compuerta_navegacion(prompt)])]},
+            max_buffer_size=int(os.environ.get("QA_BUFFER_MB", "64")) * 1024 * 1024,
+            # Pase lo que pase, el navegador solo abre la aplicación bajo prueba (o la URL que la persona pasó al paso)
+            # y no ejecuta acciones irreversibles sin que una persona lo apruebe.
+            hooks={"PreToolUse": [
+                HookMatcher(matcher="mcp__playwright__browser_navigate", hooks=[self._compuerta_navegacion(prompt)]),
+                HookMatcher(matcher=HERRAMIENTAS_CON_CLIC, hooks=[self._compuerta_irreversible(paso)]),
+            ]},
         )
         if presentacion:
             opciones = ClaudeAgentOptions(**comunes, mcp_servers={}, strict_mcp_config=True,
@@ -306,7 +400,8 @@ class Corredor:
             # nunca los que la persona tenga configurados en su Claude Code (p. ej. su navegador Chrome).
             opciones = ClaudeAgentOptions(**comunes, mcp_servers=mcp if mcp.exists() else {}, strict_mcp_config=True,
                                           allowed_tools=HERRAMIENTAS_PERMITIDAS,
-                                          max_turns=int(os.environ.get("QA_MAX_TURNOS", "80")))
+                                          max_turns=int(os.environ.get("QA_MAX_TURNOS", "80")),
+                                          max_budget_usd=float(os.environ.get("QA_PRESUPUESTO_PASO_USD", "5.0")))
         nombres: dict[str, str] = {}  # tool_use_id -> nombre, para describir resultados
         resultado: dict = {"tipo": "fin", "paso": paso, "ok": False, "resumen": "El agente terminó sin resultado."}
         async for mensaje in query(prompt=prompt, options=opciones):
@@ -346,4 +441,5 @@ class Corredor:
                 resultado = {"tipo": "fin", "paso": paso, "ok": ok, "resumen": resumen,
                              "duracion_ms": mensaje.duration_ms, "costo_usd": mensaje.total_cost_usd,
                              "turnos": mensaje.num_turns, "sesion": mensaje.session_id}
+                self._registrar_metricas(resultado)
         return resultado

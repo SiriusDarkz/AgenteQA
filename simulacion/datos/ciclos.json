@@ -1,0 +1,81 @@
+{
+  "nota": "Datos curados de los tres ciclos reales del agente sobre Toolshop «with bugs» (https://with-bugs.practicesoftwaretesting.com). Fuentes: resultados/toolshop-2026-10-21/ (ciclo A), qa/historial/2026-10-25_08-51-48/ (ciclo B, corrido el 22-10) y qa/ del 25-10 (ciclo C) en la copia local del equipo. Cada defecto se cruzó con la lista oficial de 94 defectos de Testsmith y, si no coincidía, con el código fuente de sprint5-with-bugs frente a sprint5 (versión sin errores).",
+  "lista_oficial": "https://github.com/testsmith-io/practice-software-testing/blob/main/sprint5-with-bugs/testSessions/listOfBugs.md",
+  "universo_funcional": [
+    {"id": "1",  "requisito": "R3", "descripcion": "Los botones + / − del carrito no cambian la cantidad"},
+    {"id": "2",  "requisito": "R2", "descripcion": "El orden funciona al revés"},
+    {"id": "3",  "requisito": "R2", "descripcion": "La categoría «Chainsaw» lleva a un 404"},
+    {"id": "7",  "requisito": "R3", "descripcion": "El botón de borrar del carrito no funciona"},
+    {"id": "8",  "requisito": "R3", "descripcion": "El total de la línea muestra 0,00"},
+    {"id": "10", "requisito": "R4", "descripcion": "El código postal muestra «Missing value»"},
+    {"id": "12", "requisito": "R4", "descripcion": "La lista de métodos de pago muestra «Error 304»"},
+    {"id": "14", "requisito": "R4", "descripcion": "La factura muestra «Method not found»"},
+    {"id": "15", "requisito": "R4", "descripcion": "La factura invierte ciudad y país"},
+    {"id": "16", "requisito": "R4", "descripcion": "La dirección de la factura muestra «undefined»"},
+    {"id": "17", "requisito": "R1", "descripcion": "El correo y la contraseña no se validan"},
+    {"id": "21", "requisito": "R1", "descripcion": "El usuario se bloquea tras un intento fallido"},
+    {"id": "32", "requisito": "R1", "descripcion": "La portada dice «User Data not found»"},
+    {"id": "40", "requisito": "R3", "descripcion": "Los botones + / − del detalle no cambian la cantidad"},
+    {"id": "41", "requisito": "R5", "descripcion": "Agregar a favoritos muestra un error"},
+    {"id": "43", "requisito": "R3", "descripcion": "Agregar al carrito muestra un error aunque funciona"},
+    {"id": "47", "requisito": "R3", "descripcion": "No se pueden agregar más de 10 unidades"},
+    {"id": "60", "requisito": "R6", "descripcion": "La lista de asuntos muestra «Error 101» y «Error 202»"},
+    {"id": "X1", "requisito": "R4", "descripcion": "Con «Cash on Delivery» se exigen los datos bancarios (verificado en el código: checkout.component.ts de with-bugs)"},
+    {"id": "X2", "requisito": "R6", "descripcion": "El contacto se envía con el correo vacío (verificado en el código: la API de with-bugs solo exige max:120)"},
+    {"id": "X3", "requisito": "R4", "descripcion": "El botón del primer paso de pago dice «Confirm» y no genera el pedido; en sprint5 dice «Check payment» (verificado en el código)"}
+  ],
+  "visual_en_alcance": 14,
+  "ciclos": [
+    {
+      "id": "A", "fecha": "2026-10-21", "estado": "completo",
+      "carpeta": "resultados/toolshop-2026-10-21",
+      "plan": {"generados": 10, "aceptados_sin_edicion": 10, "revision_humana_seg": 121},
+      "ejecucion": {"casos": 10, "pasaron": 2, "fallaron": 8, "correctas_primer_intento": 7, "segundos": 77.1},
+      "duracion_ciclo_min": 91, "duracion_nota": "20:19:43 a 21:50:49, con las dos decisiones humanas",
+      "confirmacion_humana_seg": 18,
+      "costo_usd_tope": 4.26, "costo_nota": "Consola de Anthropic, gasto del mes al 22-10-2026: incluye este ciclo y las pruebas de desarrollo del MVP (tope superior)",
+      "defectos": [
+        {"id": "DEF-001", "severidad": "Crítica", "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "X1", "categoria": "funcional"},
+        {"id": "DEF-002", "severidad": "Alta",    "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "7",  "categoria": "funcional"},
+        {"id": "DEF-003", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "2",  "categoria": "funcional"},
+        {"id": "DEF-004", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "FP", "detecta": null, "categoria": "funcional", "motivo_fp": "La versión de referencia tampoco devuelve «Sledgehammer»: la búsqueda es por prefijo de palabra; el requisito R2 era ambiguo"},
+        {"id": "DEF-005", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "8",  "categoria": "funcional"},
+        {"id": "DEF-006", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "X2", "categoria": "funcional"},
+        {"id": "DEF-007", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "17", "categoria": "funcional"},
+        {"id": "DEF-008", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "41", "categoria": "funcional"}
+      ]
+    },
+    {
+      "id": "B", "fecha": "2026-10-22", "estado": "completo",
+      "carpeta": "resultados/toolshop-2026-10-22",
+      "plan": {"generados": 10, "aceptados_sin_edicion": 10, "revision_humana_seg": 105},
+      "ejecucion": {"casos": 10, "pasaron": 5, "fallaron": 5, "correctas_primer_intento": 9, "segundos": 78},
+      "duracion_ciclo_min": null, "duracion_nota": "Exploración terminada 20:36, plan 20:53, aprobación 20:55, ejecución 21:00, reporte 22:23 (con esperas humanas intercaladas)",
+      "confirmacion_humana_seg": null,
+      "costo_usd_tope": null,
+      "defectos": [
+        {"id": "DEF-001", "severidad": "Crítica", "humano": "CONFIRMADO", "veredicto": "FP", "detecta": null, "categoria": "funcional", "motivo_fp": "Artefacto de automatización: with-bugs registra el formulario al perder el foco (updateOn: 'blur') y selectOption de Playwright no enfoca el campo; un usuario sí registra el asunto"},
+        {"id": "DEF-002", "severidad": "Alta",    "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "2",  "categoria": "funcional"},
+        {"id": "DEF-003", "severidad": "Media",   "humano": "CONFIRMADO", "veredicto": "VP", "detecta": "8",  "categoria": "funcional"},
+        {"id": "DEF-004", "severidad": "Media",   "humano": "DESCARTADO", "veredicto": "VP", "detecta": "17", "categoria": "funcional", "nota_humana": "Descartado por «No es de impacto para el producto», aunque es el defecto 17 de la lista oficial"}
+      ]
+    },
+    {
+      "id": "C", "fecha": "2026-10-25", "estado": "pendiente de la segunda decisión humana y del reporte",
+      "carpeta": "resultados/toolshop-2026-10-25",
+      "plan": {"generados": 10, "aceptados_sin_edicion": 10, "revision_humana_seg": 54},
+      "ejecucion": {"casos": 10, "pasaron": 4, "fallaron": 6, "correctas_primer_intento": 7, "segundos": 53.5},
+      "duracion_ciclo_min": 40.5, "duracion_nota": "09:51:56 (requisitos) a 10:32:24 (seis fichas de defecto): pasos 1 a 4 con 54 s de revisión humana",
+      "confirmacion_humana_seg": null,
+      "costo_usd_tope": null,
+      "defectos": [
+        {"id": "DEF-001", "severidad": "Alta",  "humano": "PENDIENTE", "veredicto": "VP", "detecta": "X3", "categoria": "funcional"},
+        {"id": "DEF-002", "severidad": "Alta",  "humano": "PENDIENTE", "veredicto": "VP", "detecta": "2",  "categoria": "funcional"},
+        {"id": "DEF-003", "severidad": "Alta",  "humano": "PENDIENTE", "veredicto": "VP", "detecta": "7",  "categoria": "funcional"},
+        {"id": "DEF-004", "severidad": "Alta",  "humano": "PENDIENTE", "veredicto": "FP", "detecta": null, "categoria": "funcional", "motivo_fp": "Mismo artefacto de automatización que B-DEF-001 (updateOn: 'blur')"},
+        {"id": "DEF-005", "severidad": "Media", "humano": "PENDIENTE", "veredicto": "VP", "detecta": "17", "categoria": "funcional"},
+        {"id": "DEF-006", "severidad": "Baja",  "humano": "PENDIENTE", "veredicto": "VP", "detecta": "26", "categoria": "visual"}
+      ]
+    }
+  ]
+}

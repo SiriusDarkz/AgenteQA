@@ -6,6 +6,8 @@ Las pruebas que genera son de [Playwright](https://playwright.dev) y siguen func
 
 Prototipo (MVP) del proyecto capstone de la Maestría en Ciencias de Datos e Inteligencia Artificial (UASD). El caso de negocio, el canvas y la presentación están en la carpeta del proyecto; aquí está el código.
 
+**Entrega 3 (despliegue, KPIs, ética y pitch):** el repositorio incluye además el modelo financiero del caso de negocio con su simulación Monte Carlo, las métricas de los tres ciclos reales del agente con un modelo bayesiano (MCMC), un tablero en Streamlit y una regresión nocturna en GitHub Actions. Todo eso está en la [sección 12](#12-tablero-simulación-monte-carlo-y-regresión-nocturna) y nada de eso llama a la API de Anthropic.
+
 ---
 
 ## Para evaluarlo en diez minutos
@@ -13,7 +15,7 @@ Prototipo (MVP) del proyecto capstone de la Maestría en Ciencias de Datos e Int
 Con Node.js 20+ y Python 3.10+ instalados (sección 2), en una terminal:
 
 ```bash
-git clone https://github.com/tu-usuario-de-github/AgenteQA.git
+git clone https://github.com/SiriusDarkz/AgenteQA.git
 cd AgenteQA
 npm run setup                          # instala Playwright y Chromium (2–3 min)
 npx playwright test                    # → debe terminar en:  1 passed
@@ -46,7 +48,7 @@ Cómo está hecho, en cinco líneas:
 - **Para navegar** usa el servidor MCP de Playwright (`.mcp.json`), que le da un navegador Chromium real; **para ejecutar** escribe pruebas de `@playwright/test` y las corre con `npx playwright test` (`playwright.config.ts`).
 - **La interfaz web** (`app/`, FastAPI + HTML/JS sin frameworks) no tiene estado propio: muestra lo que hay en `qa/` y `tests/`, y los botones de la persona escriben en esos mismos archivos. Lo que se hace en pantalla y lo que se haría editando los archivos desde Claude Code es lo mismo.
 - **Modo demo** (`--demo`): la misma interfaz reproduce un ciclo de ejemplo sin llamar a la API ni abrir un navegador. Sirve para ver el producto sin gastar y como plan B.
-- **Límites**: en un mensaje libre el agente solo puede leer el repositorio; el navegador solo puede abrir el dominio de la aplicación bajo prueba; cada paso tiene tope de turnos y de gasto.
+- **Límites**: en un mensaje libre el agente solo puede leer el repositorio; el navegador solo puede abrir el dominio de la aplicación bajo prueba y no ejecuta acciones irreversibles (pagar, confirmar un pedido, enviar) sin aprobación humana; cada paso tiene tope de turnos y de gasto.
 
 ---
 
@@ -75,7 +77,7 @@ Se hace una sola vez y toma unos cinco minutos.
 **Paso 1. Clona el repositorio y entra en la carpeta.**
 
 ```bash
-git clone https://github.com/tu-usuario-de-github/AgenteQA.git
+git clone https://github.com/SiriusDarkz/AgenteQA.git
 cd AgenteQA
 ```
 
@@ -244,7 +246,9 @@ Debajo hay un modelo de lenguaje, así que en principio podría hablar de cualqu
 2. **El navegador solo abre la aplicación bajo prueba.** Un control del programa (no del modelo) revisa cada navegación y bloquea cualquier dominio que no sea el de `qa/requisitos.md` o el de la URL que escribiste en el paso 1.
 3. **Instrucciones de alcance.** En modo conversación recibe reglas explícitas: solo habla de la aplicación y de los hallazgos, lee los archivos antes de afirmar algo y, ante cualquier otro tema, responde con una sola frase. Esas reglas se arman en cada mensaje con el nombre y la URL de `qa/requisitos.md`, así que valen para cualquier aplicación.
 
-Además, cada mensaje libre tiene un tope de turnos y de gasto (`QA_MAX_TURNOS_CONVERSACION`, por defecto 12, y `QA_PRESUPUESTO_CONVERSACION_USD`, por defecto 1.0).
+Además, cada mensaje libre tiene un tope de turnos y de gasto (`QA_MAX_TURNOS_CONVERSACION`, por defecto 12, y `QA_PRESUPUESTO_CONVERSACION_USD`, por defecto 1.0), y cada paso del ciclo también (`QA_MAX_TURNOS`, por defecto 80, y `QA_PRESUPUESTO_PASO_USD`, por defecto 5.0).
+
+En los pasos del ciclo hay un cuarto control, agregado después de que el agente completara una compra real al explorar Toolshop (factura INV-2026000005): el programa detiene en el navegador del agente cualquier clic o envío que parezca irreversible (pagar, confirmar un pedido, comprar, enviar un mensaje, transferir, borrar una cuenta) y lo anota en `qa/incidentes.md`. Las pruebas del paso 3 no pasan por ese control porque corren con `npx playwright test`. Solo una persona puede habilitar esas acciones, con `QA_PERMITIR_IRREVERSIBLES=1` en `app/.env`; la expresión que las reconoce se puede ajustar con `QA_ACCIONES_IRREVERSIBLES`. El control y sus pruebas están en `app/agente.py` y `app/pruebas/test_compuertas.py`.
 
 ---
 
@@ -266,7 +270,7 @@ Así se hizo el ciclo de Toolshop de `resultados/`. Nunca apuntes el agente a un
 - **La página no abre.** Entra a mano a http://localhost:8765. Si el puerto está ocupado, arranca con `python3 -m app --puerto 9000` y entra a http://localhost:9000.
 - **«Error de la API: authentication_failed».** La llave está mal copiada o no se está leyendo. Abre `app/.env`, comprueba que la línea `ANTHROPIC_API_KEY=sk-ant-...` está completa y vuelve a arrancar.
 - **La exploración (paso 1) dice que no encuentra el navegador.** Ejecuta `npx playwright install chromium` dentro de la carpeta y repite el paso.
-- **El agente se detiene antes de terminar un paso.** Mira su último mensaje y vuelve a pulsar el botón del paso; lo que ya escribió se conserva. Si dice que se quedó sin turnos, agrega `QA_MAX_TURNOS=150` a `app/.env` y vuelve a arrancar.
+- **El agente se detiene antes de terminar un paso.** Mira su último mensaje y vuelve a pulsar el botón del paso; lo que ya escribió se conserva. Si dice que se quedó sin turnos, agrega `QA_MAX_TURNOS=150` a `app/.env` y vuelve a arrancar; si llegó al tope de gasto, sube `QA_PRESUPUESTO_PASO_USD`.
 - **Un paso se queda colgado.** Pulsa **Detener** en la interfaz y repítelo.
 - **Aparece «workspace has not been trusted».** No afecta. Si quieres quitarlo, abre `claude` una vez dentro de la carpeta (si tienes Claude Code) y acepta la confianza.
 - **`git status` muestra archivos nuevos en `qa/` o `tests/` después de correr la demo.** Es normal: son los archivos del ciclo que acabas de correr. Puedes borrarlos, versionarlos o pulsar **Nuevo ciclo**, que los archiva en `qa/historial/` (fuera de git).
@@ -301,9 +305,89 @@ app/                    la interfaz web y el programa que corre el agente
   .env.example          plantilla de configuración; cópiala como app/.env y pon tu llave (app/.env no se sube)
 
 resultados/toolshop-2026-10-21/   ciclo real de referencia, con su README y una configuración para re-ejecutar sus pruebas
+resultados/toolshop-2026-10-22/   segundo ciclo real (textos y pruebas, sin la evidencia pesada)
+resultados/toolshop-2026-10-25/   tercer ciclo real, pendiente de la segunda decisión humana y del reporte
+
+simulacion/             modelo financiero, Monte Carlo, valor para el cliente, métricas del agente y MCMC
+  datos/ciclos.json     los tres ciclos reales cruzados con la lista oficial de defectos
+  resultados/           resultados.json (todas las cifras), tablas CSV y el MCMC guardado
+  pruebas/              comprueban que el modelo reproduce el caso de negocio
+dashboard/app.py        el tablero de Streamlit (cinco vistas)
+metricas/regresion/     un resumen por corrida de la regresión nocturna
+notebooks/              la simulación Monte Carlo para abrir en Google Colab
+docs/                   protocolo y hoja de registro de la línea base manual
+.github/workflows/      la regresión nocturna
+app/pruebas/            pruebas del control de acciones irreversibles
 ```
 
 No está en el repositorio (lo excluye `.gitignore`): `app/.env` con la llave, `node_modules/`, `app/.venv/`, y las salidas pesadas de cada corrida (`qa/evidencia/`, `qa/reporte-html/`, `qa/historial/`).
 
 ---
+
+---
+
+## 12. Tablero, simulación Monte Carlo y regresión nocturna
+
+Esta parte responde a la entrega 3 del capstone. Ninguna de estas piezas llama a la API de Anthropic: son cálculos que corren en tu computadora en segundos.
+
+| Pieza | Dónde | Para qué |
+|---|---|---|
+| Modelo financiero | `simulacion/modelo.py` | Reconstruye el modelo de 60 meses del caso de negocio. `simulacion/pruebas/test_modelo.py` comprueba que reproduce sus cifras publicadas |
+| Monte Carlo | `simulacion/montecarlo.py` | 10,000 futuros posibles en unos 2 s: probabilidad de cada hito, necesidad de caja, VAN, reglas de inversión y riesgos |
+| Valor para el cliente | `simulacion/cliente.py` | Cuándo se paga solo el plan para el cliente |
+| Métricas del agente | `simulacion/agente.py` y `simulacion/datos/ciclos.json` | Precisión, cobertura y F1 de los tres ciclos reales, con intervalos bayesianos |
+| MCMC | `simulacion/mcmc.py` | Modelo jerárquico de detección de defectos, estimado con PyMC |
+| Todas las cifras | `simulacion/resultados/resultados.json` | La fuente única del informe, el deck y el tablero |
+| Tablero | `dashboard/app.py` | Junta directiva, monitoreo del agente, simulación, valor para el cliente y gobernanza |
+| Regresión nocturna | `.github/workflows/regresion-nocturna.yml` | Corre cada noche las pruebas del agente sin el agente y guarda el resumen en `metricas/regresion/` |
+
+### 12.1 Abrir el tablero en tu computadora
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r dashboard/requirements.txt
+streamlit run dashboard/app.py                          # abre http://localhost:8501
+```
+
+En la pestaña **Simulación Monte Carlo** puedes cambiar los supuestos (ritmo de ventas, bajas, costo variable, descuentos, conversión de los pilotos) y volver a correr las 10,000 corridas. Con los valores iniciales reproduce las cifras del informe.
+
+### 12.2 Regenerar las cifras y correr las pruebas
+
+```bash
+pip install -r simulacion/requirements.txt              # incluye PyMC para el MCMC
+python3 -m simulacion.generar                           # unos 40 s; con --sin-mcmc reutiliza el MCMC guardado
+python3 -m pytest simulacion/pruebas app/pruebas -q     # 37 pruebas
+```
+
+Si cambias un supuesto en el código, vuelve a correr `python3 -m simulacion.generar` para que el tablero, el informe y el deck queden con las mismas cifras. La semilla es fija (20261026): el resultado se repite al dólar.
+
+### 12.3 Publicar el tablero en Streamlit Community Cloud (gratis)
+
+1. Entra a https://share.streamlit.io con la cuenta de GitHub dueña del repositorio.
+2. Crea una app nueva: repositorio `SiriusDarkz/AgenteQA`, rama `main`, archivo principal `dashboard/app.py`.
+3. Publica. La dirección queda del tipo `https://<nombre>.streamlit.app`.
+
+**Tablero publicado:** _(pegar aquí la dirección)_
+
+Las apps gratuitas se duermen si nadie las visita; ábrela unos minutos antes de presentar.
+
+### 12.4 Regresión nocturna
+
+Cada noche, a las 03:17 de Santo Domingo, GitHub Actions instala Chromium y corre sin el agente las 10 pruebas que el agente escribió en el ciclo del 21-10-2026, más la prueba de humo de Swag Labs. El resumen queda en `metricas/regresion/AAAA-MM-DD.json` y el tablero lo muestra en **Monitoreo del agente**. Se esperan 2 pruebas que pasan y 8 que fallan, porque son defectos conocidos de Toolshop «with bugs»; si el resultado cambia, el resumen lo marca para revisarlo.
+
+Para lanzarla a mano: pestaña **Actions** del repositorio → **Regresión nocturna** → **Run workflow**. Así se desplegaría en un cliente: las pruebas viven en su repositorio y su integración continua las corre en cada cambio.
+
+### 12.5 Los tres ciclos reales
+
+| Ciclo | Fecha | Casos | Pasaron / fallaron | Defectos reportados | Reales | Estado |
+|---|---|---|---|---|---|---|
+| A | 2026-10-21 | 10 | 2 / 8 | 8 | 7 | Completo |
+| B | 2026-10-22 | 10 | 5 / 5 | 4 | 3 | Completo |
+| C | 2026-10-25 | 10 | 4 / 6 | 6 | 5 | Falta la segunda decisión humana y el reporte |
+
+Cada defecto se cruzó con la [lista oficial de Testsmith](https://github.com/testsmith-io/practice-software-testing/blob/main/sprint5-with-bugs/testSessions/listOfBugs.md) y, si no figuraba, con el código fuente de la versión con errores frente a la versión sin errores. El cruce completo está en `simulacion/datos/ciclos.json`.
+
+### 12.6 Línea base manual
+
+`docs/linea-base-manual.md` explica cómo medir cuánto tarda una persona en hacer a mano lo que hace el agente: ejecutar los 10 casos del plan y documentar dos defectos. Esa línea base es la cifra de trabajo repetitivo que el agente libera.
 

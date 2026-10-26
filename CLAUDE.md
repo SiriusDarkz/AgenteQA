@@ -47,4 +47,6 @@ qa/                    exploración, plan, resultados, defectos, reporte, eviden
 tests/                 pruebas generadas (@playwright/test) y tests/datos.ts
 playwright.config.ts   configuración de ejecución
 resultados/            ciclos reales de referencia ya terminados (solo lectura: no son el ciclo actual, no los modifiques)
+simulacion/ dashboard/ metricas/ notebooks/ docs/   entrega 3 del curso (modelo financiero, tablero, regresión
+                       nocturna, línea base): no son parte del ciclo; no los leas ni los modifiques desde una skill
 ```

@@ -1,0 +1,5 @@
+# Para regenerar las cifras (python -m simulacion.generar) y correr las pruebas
+-r ../dashboard/requirements.txt
+pymc>=5.20
+arviz>=0.20
+pytest>=8
