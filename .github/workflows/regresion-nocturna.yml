@@ -53,12 +53,12 @@ jobs:
 
       - name: Pruebas del agente sobre Toolshop (sin el agente)
         env:
-          PLAYWRIGHT_JSON_OUTPUT_NAME: regresion-toolshop.json
+          PLAYWRIGHT_JSON_OUTPUT_FILE: regresion-toolshop.json
         run: npx playwright test --config resultados/toolshop-2026-10-21/playwright.config.ts --reporter=json,list || true
 
       - name: Prueba de humo sobre Swag Labs
         env:
-          PLAYWRIGHT_JSON_OUTPUT_NAME: regresion-humo.json
+          PLAYWRIGHT_JSON_OUTPUT_FILE: regresion-humo.json
         run: npx playwright test tests/ejemplo.spec.ts --reporter=json,list || true
 
       - name: Resumir la corrida
