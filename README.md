@@ -367,7 +367,7 @@ Si cambias un supuesto en el código, vuelve a correr `python3 -m simulacion.gen
 2. Crea una app nueva: repositorio `SiriusDarkz/AgenteQA`, rama `main`, archivo principal `dashboard/app.py`.
 3. Publica. La dirección queda del tipo `https://<nombre>.streamlit.app`.
 
-**Tablero publicado:** _(pegar aquí la dirección)_
+**Tablero publicado:** (https://agente-grupo2.streamlit.app/)
 
 Las apps gratuitas se duermen si nadie las visita; ábrela unos minutos antes de presentar.
 
