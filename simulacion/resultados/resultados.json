@@ -1,5 +1,5 @@
 {
- "generado": "2026-10-26 11:32",
+ "generado": "2026-10-26 11:50",
  "semilla": 20261026,
  "escenarios": [
   {
@@ -795,6 +795,10 @@
    "prob_van_sin_vt_positivo": 0.1857,
    "prob_equilibrio_36": 0.5839,
    "prob_necesidad_mayor_119m": 0.436,
+   "prob_al_menos_un_piloto": 0.8404,
+   "prob_bajas_en_plan": 0.4562,
+   "prob_costo_variable_en_plan": 0.232,
+   "prob_van_con_vt_positivo_si_no_recupera": 0.457395,
    "necesidad_maxima": {
     "p5": 661008.059745,
     "p10": 755715.698118,
@@ -1818,10 +1822,13 @@
     "van_sin_vt_esperado": -489933.140747,
     "capital_expuesto_medio": 1168346.360354,
     "capital_expuesto_p90": 1630104.453958,
+    "prob_capital_mayor_119m": 0.436,
     "perdida_media_mundos_malos": 1337720.941306,
     "malos_detenidos": 0.0,
     "buenos_detenidos": 0.0,
-    "prob_detenerse_por_mes": {}
+    "prob_detenerse_por_mes": {},
+    "buenos_detenidos_por_mes": {},
+    "malos_detenidos_por_mes": {}
    },
    {
     "regla": "Etapas del caso: hitos 1 a 4",
@@ -1830,6 +1837,7 @@
     "van_sin_vt_esperado": -238929.901148,
     "capital_expuesto_medio": 431196.765616,
     "capital_expuesto_p90": 913367.119461,
+    "prob_capital_mayor_119m": 0.014,
     "perdida_media_mundos_malos": 410464.494903,
     "malos_detenidos": 0.930463,
     "buenos_detenidos": 0.615228,
@@ -1838,6 +1846,18 @@
      "12": 0.204,
      "24": 0.0914,
      "36": 0.0242
+    },
+    "buenos_detenidos_por_mes": {
+     "6": 0.454784,
+     "12": 0.121062,
+     "24": 0.036464,
+     "36": 0.002917
+    },
+    "malos_detenidos_por_mes": {
+     "6": 0.527845,
+     "12": 0.247261,
+     "24": 0.120055,
+     "36": 0.035301
     }
    },
    {
@@ -1847,6 +1867,7 @@
     "van_sin_vt_esperado": -294143.034019,
     "capital_expuesto_medio": 595854.54175,
     "capital_expuesto_p90": 1002307.558805,
+    "prob_capital_mayor_119m": 0.0236,
     "perdida_media_mundos_malos": 576782.220467,
     "malos_detenidos": 0.879489,
     "buenos_detenidos": 0.393816,
@@ -1855,6 +1876,18 @@
      "12": 0.3538,
      "24": 0.1585,
      "36": 0.0409
+    },
+    "buenos_detenidos_por_mes": {
+     "6": 0.137398,
+     "12": 0.196908,
+     "24": 0.054842,
+     "36": 0.004667
+    },
+    "malos_detenidos_por_mes": {
+     "6": 0.171485,
+     "12": 0.435636,
+     "24": 0.212568,
+     "36": 0.059799
     }
    },
    {
@@ -1864,6 +1897,7 @@
     "van_sin_vt_esperado": -321685.566944,
     "capital_expuesto_medio": 671127.681254,
     "capital_expuesto_p90": 1033034.103863,
+    "prob_capital_mayor_119m": 0.0272,
     "perdida_media_mundos_malos": 652383.864385,
     "malos_detenidos": 0.858795,
     "buenos_detenidos": 0.295508,
@@ -1871,6 +1905,16 @@
      "12": 0.4273,
      "24": 0.1905,
      "36": 0.0479
+    },
+    "buenos_detenidos_por_mes": {
+     "12": 0.224037,
+     "24": 0.066219,
+     "36": 0.005251
+    },
+    "malos_detenidos_por_mes": {
+     "12": 0.533323,
+     "24": 0.255326,
+     "36": 0.070146
     }
    },
    {
@@ -1880,11 +1924,42 @@
     "van_sin_vt_esperado": -419375.408842,
     "capital_expuesto_medio": 896410.921893,
     "capital_expuesto_p90": 1107476.826287,
+    "prob_capital_mayor_119m": 0.0607,
     "perdida_media_mundos_malos": 937769.351448,
     "malos_detenidos": 0.698113,
     "buenos_detenidos": 0.127771,
     "prob_detenerse_por_mes": {
      "24": 0.5026
+    },
+    "buenos_detenidos_por_mes": {
+     "24": 0.127771
+    },
+    "malos_detenidos_por_mes": {
+     "24": 0.698113
+    }
+   },
+   {
+    "regla": "Recomendada: hito 1 con un piloto que pague y hito 3",
+    "prob_detenerse": 0.5721,
+    "van_con_vt_esperado": 537933.149481,
+    "van_sin_vt_esperado": -371879.002176,
+    "capital_expuesto_medio": 782727.105945,
+    "capital_expuesto_p90": 1076176.591045,
+    "prob_capital_mayor_119m": 0.051,
+    "perdida_media_mundos_malos": 810510.157679,
+    "malos_detenidos": 0.742848,
+    "buenos_detenidos": 0.244749,
+    "prob_detenerse_por_mes": {
+     "6": 0.1598,
+     "24": 0.4123
+    },
+    "buenos_detenidos_por_mes": {
+     "6": 0.137398,
+     "24": 0.107351
+    },
+    "malos_detenidos_por_mes": {
+     "6": 0.171485,
+     "24": 0.571363
     }
    }
   ],
@@ -3554,166 +3629,169 @@
    "muestras_por_cadena": 2000,
    "calentamiento": 2000,
    "divergencias": 0,
-   "r_hat_max": 1.000662,
-   "ess_bulk_min": 2866.52431,
+   "r_hat_max": 1.001575,
+   "ess_bulk_min": 2855.376118,
+   "parametros_revisados": 27,
+   "r_hat_max_todos": 1.001575,
+   "ess_bulk_min_todos": 2855.376118,
    "parametros": {
     "mu": {
-     "media": -1.67587,
-     "sd": 0.742346,
-     "r_hat": 1.000459,
-     "ess_bulk": 3220.944336
+     "media": -1.663566,
+     "sd": 0.744757,
+     "r_hat": 1.000964,
+     "ess_bulk": 3108.003313
     },
     "sd_defecto": {
-     "media": 2.145106,
-     "sd": 0.75408,
-     "r_hat": 1.000453,
-     "ess_bulk": 3364.8584
+     "media": 2.17306,
+     "sd": 0.737844,
+     "r_hat": 1.001404,
+     "ess_bulk": 3467.702727
     },
     "sd_ciclo": {
-     "media": 0.724674,
-     "sd": 0.524601,
-     "r_hat": 1.000662,
-     "ess_bulk": 2866.52431
+     "media": 0.726308,
+     "sd": 0.521114,
+     "r_hat": 1.001575,
+     "ess_bulk": 2855.376118
     }
    }
   },
   "recall_ciclo_nuevo": {
-   "media": 0.259992,
-   "ic_bajo": 0.077125,
-   "ic_alto": 0.58975
+   "media": 0.260112,
+   "ic_bajo": 0.07818,
+   "ic_alto": 0.577402
   },
   "cobertura_k_ciclos": {
    "1": {
-    "media": 0.25961,
-    "ic_bajo": 0.081276,
-    "ic_alto": 0.574832
+    "media": 0.259899,
+    "ic_bajo": 0.077475,
+    "ic_alto": 0.568424
    },
    "2": {
-    "media": 0.383504,
-    "ic_bajo": 0.184477,
-    "ic_alto": 0.728119
+    "media": 0.383901,
+    "ic_bajo": 0.178553,
+    "ic_alto": 0.71641
    },
    "3": {
-    "media": 0.463105,
-    "ic_bajo": 0.254664,
-    "ic_alto": 0.798382
+    "media": 0.462479,
+    "ic_bajo": 0.256742,
+    "ic_alto": 0.791401
    },
    "4": {
-    "media": 0.519847,
-    "ic_bajo": 0.309639,
-    "ic_alto": 0.841822
+    "media": 0.518536,
+    "ic_bajo": 0.306528,
+    "ic_alto": 0.836556
    },
    "5": {
-    "media": 0.563327,
-    "ic_bajo": 0.347433,
-    "ic_alto": 0.874244
+    "media": 0.561915,
+    "ic_bajo": 0.344253,
+    "ic_alto": 0.870361
    }
   },
   "prob_por_defecto": [
    {
-    "media": 0.113773,
-    "ic_bajo": 0.00059,
-    "ic_alto": 0.49693
+    "media": 0.1129,
+    "ic_bajo": 0.000644,
+    "ic_alto": 0.510525
    },
    {
-    "media": 0.753127,
-    "ic_bajo": 0.24447,
-    "ic_alto": 0.995946
+    "media": 0.758053,
+    "ic_bajo": 0.250648,
+    "ic_alto": 0.996251
    },
    {
-    "media": 0.110448,
-    "ic_bajo": 0.000577,
-    "ic_alto": 0.488487
+    "media": 0.111616,
+    "ic_bajo": 0.000579,
+    "ic_alto": 0.505625
    },
    {
-    "media": 0.537483,
-    "ic_bajo": 0.102581,
-    "ic_alto": 0.954096
+    "media": 0.544005,
+    "ic_bajo": 0.104344,
+    "ic_alto": 0.950531
    },
    {
-    "media": 0.542583,
-    "ic_bajo": 0.107489,
-    "ic_alto": 0.95184
+    "media": 0.547084,
+    "ic_bajo": 0.108757,
+    "ic_alto": 0.949771
    },
    {
-    "media": 0.112112,
-    "ic_bajo": 0.000719,
-    "ic_alto": 0.504671
+    "media": 0.10963,
+    "ic_bajo": 0.00058,
+    "ic_alto": 0.478925
    },
    {
-    "media": 0.112846,
-    "ic_bajo": 0.00063,
-    "ic_alto": 0.494808
+    "media": 0.111147,
+    "ic_bajo": 0.000501,
+    "ic_alto": 0.489463
    },
    {
-    "media": 0.108573,
-    "ic_bajo": 0.000618,
-    "ic_alto": 0.492139
+    "media": 0.112525,
+    "ic_bajo": 0.000657,
+    "ic_alto": 0.500752
    },
    {
-    "media": 0.112248,
-    "ic_bajo": 0.000614,
-    "ic_alto": 0.499565
+    "media": 0.115155,
+    "ic_bajo": 0.000528,
+    "ic_alto": 0.505459
    },
    {
-    "media": 0.110729,
-    "ic_bajo": 0.000589,
-    "ic_alto": 0.493855
+    "media": 0.110396,
+    "ic_bajo": 0.000568,
+    "ic_alto": 0.494515
    },
    {
-    "media": 0.750288,
-    "ic_bajo": 0.240695,
-    "ic_alto": 0.995608
+    "media": 0.757612,
+    "ic_bajo": 0.253251,
+    "ic_alto": 0.995892
    },
    {
-    "media": 0.111443,
-    "ic_bajo": 0.00054,
-    "ic_alto": 0.501197
+    "media": 0.109998,
+    "ic_bajo": 0.000564,
+    "ic_alto": 0.487293
    },
    {
-    "media": 0.112393,
-    "ic_bajo": 0.000719,
-    "ic_alto": 0.49416
+    "media": 0.112365,
+    "ic_bajo": 0.000643,
+    "ic_alto": 0.496005
    },
    {
-    "media": 0.111481,
-    "ic_bajo": 0.00067,
-    "ic_alto": 0.484992
+    "media": 0.111068,
+    "ic_bajo": 0.000627,
+    "ic_alto": 0.493882
    },
    {
-    "media": 0.313979,
-    "ic_bajo": 0.023515,
-    "ic_alto": 0.810363
+    "media": 0.315561,
+    "ic_bajo": 0.026278,
+    "ic_alto": 0.807923
    },
    {
-    "media": 0.11255,
-    "ic_bajo": 0.000544,
-    "ic_alto": 0.503388
+    "media": 0.111019,
+    "ic_bajo": 0.000565,
+    "ic_alto": 0.491368
    },
    {
-    "media": 0.113646,
-    "ic_bajo": 0.000712,
-    "ic_alto": 0.507686
+    "media": 0.111054,
+    "ic_bajo": 0.000639,
+    "ic_alto": 0.488855
    },
    {
-    "media": 0.112956,
-    "ic_bajo": 0.000604,
-    "ic_alto": 0.509739
+    "media": 0.112046,
+    "ic_bajo": 0.000615,
+    "ic_alto": 0.486522
    },
    {
-    "media": 0.313932,
-    "ic_bajo": 0.023099,
-    "ic_alto": 0.819703
+    "media": 0.314157,
+    "ic_bajo": 0.024098,
+    "ic_alto": 0.812066
    },
    {
-    "media": 0.310622,
-    "ic_bajo": 0.026841,
-    "ic_alto": 0.807313
+    "media": 0.315026,
+    "ic_bajo": 0.023265,
+    "ic_alto": 0.818109
    },
    {
-    "media": 0.310479,
-    "ic_bajo": 0.024571,
-    "ic_alto": 0.810289
+    "media": 0.314829,
+    "ic_bajo": 0.023498,
+    "ic_alto": 0.821864
    }
   ]
  }

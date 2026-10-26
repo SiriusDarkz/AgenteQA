@@ -126,6 +126,10 @@ def resumen(res: dict) -> dict:
         "prob_van_sin_vt_positivo": _prob(ind["van_sin_vt"] > 0),
         "prob_equilibrio_36": _prob(ind["mes_equilibrio"] <= 36),
         "prob_necesidad_mayor_119m": _prob(ind["necesidad_maxima"] > 1.19e6),
+        "prob_al_menos_un_piloto": _prob(res["sorteos"]["pilotos_pagan"] >= 1),
+        "prob_bajas_en_plan": _prob(res["sorteos"]["m_bajas"] <= 1.0),
+        "prob_costo_variable_en_plan": _prob(res["sorteos"]["costo_variable"] <= 0.25),
+        "prob_van_con_vt_positivo_si_no_recupera": float((ind["van_con_vt"][~recupera] > 0).mean()) if (~recupera).any() else None,
         "necesidad_maxima": _resumen_variable(ind["necesidad_maxima"]),
         "mes_necesidad": _resumen_variable(ind["mes_necesidad"]),
         "mes_equilibrio": _resumen_variable(np.where(np.isnan(ind["mes_equilibrio"]), 61, ind["mes_equilibrio"])),
@@ -183,10 +187,13 @@ def _evaluar_politica(res: dict, compuertas: list) -> dict:
         "van_sin_vt_esperado": float(van_sin.mean()),
         "capital_expuesto_medio": float(perdida.mean()),
         "capital_expuesto_p90": _pct(perdida, 90),
+        "prob_capital_mayor_119m": _prob(perdida > 1.19e6),
         "perdida_media_mundos_malos": float(perdida[malo].mean()) if malo.any() else None,
         "malos_detenidos": float(detenido[malo].mean()) if malo.any() else None,
         "buenos_detenidos": float(detenido[bueno].mean()) if bueno.any() else None,
         "prob_detenerse_por_mes": {str(m): _prob(detenido & (mes_parada == m)) for m, _ in compuertas},
+        "buenos_detenidos_por_mes": {str(m): float((detenido & (mes_parada == m))[bueno].mean()) for m, _ in compuertas} if bueno.any() else {},
+        "malos_detenidos_por_mes": {str(m): float((detenido & (mes_parada == m))[malo].mean()) for m, _ in compuertas} if malo.any() else {},
     }
 
 
@@ -201,6 +208,7 @@ def politicas(res: dict) -> list:
         ("Hito 1 con un piloto que pague, hitos 2 a 4", [(6, (x["pilotos_pagan"] >= 1) & tecnico), (12, h[:, 1]), (24, h[:, 2]), (36, h[:, 3])]),
         ("Solo los hitos de ARR (2 a 4)", [(12, h[:, 1]), (24, h[:, 2]), (36, h[:, 3])]),
         ("Solo el hito 3 (ARR del mes 24)", [(24, h[:, 2])]),
+        ("Recomendada: hito 1 con un piloto que pague y hito 3", [(6, (x["pilotos_pagan"] >= 1) & tecnico), (24, h[:, 2])]),
     ]
     return [dict(regla=nombre, **_evaluar_politica(res, compuertas)) for nombre, compuertas in reglas]
 

@@ -33,10 +33,11 @@ def ajustar(matriz: np.ndarray, semilla: int = 20261026, draws: int = 2000, tune
         z = pm.Normal("z", 0.0, 1.0, shape=n_def)
         w = pm.Normal("w", 0.0, 1.0, shape=n_cic)
         pm.Bernoulli("y", logit_p=mu + sd_def * z[d_idx] + sd_cic * w[c_idx], observed=y)
-        idata = pm.sample(draws=draws, tune=tune, chains=chains, target_accept=0.95, random_seed=semilla,
+        idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=1, target_accept=0.95, random_seed=semilla,
                           progressbar=False, compute_convergence_checks=True)
 
     resumen = az.summary(idata, var_names=["mu", "sd_defecto", "sd_ciclo"])
+    todos = az.summary(idata, var_names=["mu", "sd_defecto", "sd_ciclo", "z", "w"])   # incluye los 24 efectos aleatorios
     post = idata.posterior
     mu = post["mu"].values.reshape(-1)
     sd_def = post["sd_defecto"].values.reshape(-1)
@@ -65,6 +66,8 @@ def ajustar(matriz: np.ndarray, semilla: int = 20261026, draws: int = 2000, tune
         "diagnostico": {
             "cadenas": chains, "muestras_por_cadena": draws, "calentamiento": tune, "divergencias": divergencias,
             "r_hat_max": float(resumen["r_hat"].max()), "ess_bulk_min": float(resumen["ess_bulk"].min()),
+            "parametros_revisados": int(len(todos)),
+            "r_hat_max_todos": float(todos["r_hat"].max()), "ess_bulk_min_todos": float(todos["ess_bulk"].min()),
             "parametros": {k: {"media": float(resumen.loc[k, "mean"]), "sd": float(resumen.loc[k, "sd"]),
                                "r_hat": float(resumen.loc[k, "r_hat"]), "ess_bulk": float(resumen.loc[k, "ess_bulk"])}
                            for k in ("mu", "sd_defecto", "sd_ciclo")},

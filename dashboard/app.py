@@ -193,6 +193,7 @@ def tabla_politicas(politicas: list) -> pd.DataFrame:
         "VAN esperado a 5 años": usd_m(p["van_sin_vt_esperado"]),
         "Capital expuesto promedio": usd_m(p["capital_expuesto_medio"]),
         "Capital expuesto P90": usd_m(p["capital_expuesto_p90"]),
+        "Supera los USD 1.19 M": pct(p["prob_capital_mayor_119m"]),
         "Negocios buenos detenidos": pct(p["buenos_detenidos"]),
         "Negocios malos detenidos": pct(p["malos_detenidos"]),
     } for p in politicas])
@@ -204,10 +205,13 @@ with tab_junta:
     etapas = {p["regla"]: p for p in MC["politicas"]}
     caso = etapas["Etapas del caso: hitos 1 a 4"]
     todo = etapas["Todo de una vez (sin compuertas)"]
+    reco = etapas["Recomendada: hito 1 con un piloto que pague y hito 3"]
     st.markdown(
-        f"<div class='decision'><b>Decisión que se pide:</b> aprobar solo la etapa 1 (USD 188,400, seis meses) y decidir la "
-        f"siguiente con los pilotos. La simulación muestra por qué: comprometer todo de una vez expone en promedio "
-        f"USD {todo['capital_expuesto_medio'] / 1e6:.2f} M; invertir por etapas expone USD {caso['capital_expuesto_medio'] / 1e6:.2f} M.</div>",
+        f"<div class='decision'><b>Decisión que se pide:</b> aprobar solo la etapa 1 (USD 188,400, seis meses) y seguir con dos "
+        f"compuertas: un piloto pagado en el mes 6 y el ARR del mes 24. Con esa regla el VAN esperado es "
+        f"USD {reco['van_con_vt_esperado'] / 1e6:.2f} M y el financiamiento de USD 1.19 M alcanza en "
+        f"{pct(1 - reco['prob_capital_mayor_119m'])} de los futuros. Si se compromete todo de una vez, "
+        f"no alcanza en {pct(todo['prob_capital_mayor_119m'])}.</div>",
         unsafe_allow_html=True)
     c = st.columns(5)
     c[0].metric("Cumplir el hito 1 (mes 6)", pct(r["prob_hito"][0]), help="Dos de tres pilotos pasan a pago y 70% de los casos se acepta sin edición.")
@@ -233,14 +237,17 @@ with tab_junta:
     st.subheader("¿Conviene invertir por etapas?")
     st.dataframe(tabla_politicas(MC["politicas"]), hide_index=True, width="stretch")
     st.markdown(
-        f"- **Las etapas protegen el capital:** en los negocios que no recuperan la inversión, la pérdida promedio baja de "
-        f"{usd_m(todo['perdida_media_mundos_malos'])} a {usd_m(caso['perdida_media_mundos_malos'])}.\n"
-        f"- **Pero el hito 1 es muy estricto:** «dos de tres pilotos pagan» detiene {pct(caso['buenos_detenidos'])} de los negocios "
-        f"que sí recuperarían la inversión. Con «al menos un piloto paga», el VAN esperado sube de "
-        f"{usd_m(caso['van_con_vt_esperado'])} a {usd_m(etapas['Hito 1 con un piloto que pague, hitos 2 a 4']['van_con_vt_esperado'])}.\n"
+        f"- **Negocio bueno** = recupera la inversión en 60 meses si se invierte todo; **malo** = no la recupera "
+        f"(aunque {pct(r['prob_van_con_vt_positivo_si_no_recupera'])} de esos aún tiene VAN con valor terminal positivo).\n"
+        f"- **Las etapas protegen el capital:** en los negocios malos, el capital expuesto promedio baja de "
+        f"{usd_m(todo['perdida_media_mundos_malos'])} a {usd_m(reco['perdida_media_mundos_malos'])} con la regla recomendada.\n"
+        f"- **El hito 1 del caso es muy estricto:** las etapas del caso detienen {pct(caso['buenos_detenidos'])} de los negocios buenos, "
+        f"{pct(caso['buenos_detenidos_por_mes']['6'])} ya en el mes 6. La regla recomendada detiene {pct(reco['buenos_detenidos'])} "
+        f"y sube el VAN esperado de {usd_m(caso['van_con_vt_esperado'])} a {usd_m(reco['van_con_vt_esperado'])}.\n"
         f"- **El hito 3 es la mejor señal:** el ARR del mes 24 anticipa {pct(MC['clasificador']['hito3']['actual']['sensibilidad'])} "
         f"de los negocios buenos y descarta {pct(MC['clasificador']['hito3']['actual']['especificidad'])} de los malos; el hito 2, "
-        f"{pct(MC['clasificador']['hito2']['actual']['sensibilidad'])} y {pct(MC['clasificador']['hito2']['actual']['especificidad'])}.")
+        f"{pct(MC['clasificador']['hito2']['actual']['sensibilidad'])} y {pct(MC['clasificador']['hito2']['actual']['especificidad'])}, "
+        f"por eso queda como alerta y no como compuerta.")
     with st.expander("Por qué la mediana del Monte Carlo queda por debajo del escenario base"):
         st.dataframe(pd.DataFrame([{"Paso": f["paso"], "Recupera en 60 meses": pct(f["prob_recupera"]),
                                     "Necesidad de caja (mediana)": usd(f["necesidad_p50"]),
