@@ -1,0 +1,84 @@
+{
+ "fecha": "2026-10-29T14:25:50+00:00",
+ "origen": "Regresión nocturna en GitHub Actions (sin el agente y sin IA)",
+ "suite": "resultados/toolshop-2026-10-21",
+ "aplicacion": "https://with-bugs.practicesoftwaretesting.com",
+ "total": 10,
+ "pasaron": 2,
+ "fallaron": 8,
+ "omitidas": 0,
+ "inestables": 0,
+ "segundos": 72.1,
+ "pruebas": [
+  {
+   "titulo": "CP-06 · Carrito: cantidad 2, luego 3, con totales recalculados (R3 · Esc. 3)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 14.2
+  },
+  {
+   "titulo": "CP-07 · Quitar un producto del carrito (R3)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 8.6
+  },
+  {
+   "titulo": "CP-04 · Búsqueda «hammer» ordenada por precio ascendente (R2 · Esc. 2)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 2.7
+  },
+  {
+   "titulo": "CP-05 · Orden por nombre A-Z y filtro por categoría Hammer (R2)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 2.8
+  },
+  {
+   "titulo": "CP-08 · Compra completa con «Cash on Delivery» hasta la factura (R4 · Esc. 1)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 8.2
+  },
+  {
+   "titulo": "CP-10 · Contacto: campo obligatorio vacío y luego envío válido (R6 · Esc. 5)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 6.0
+  },
+  {
+   "titulo": "CP-09 · Favoritos: aviso sin sesión y alta con sesión (R5)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 7.8
+  },
+  {
+   "titulo": "CP-01 · Inicio de sesión válido (R1)",
+   "estado": "expected",
+   "resultado": "passed",
+   "segundos": 2.1
+  },
+  {
+   "titulo": "CP-02 · Inicio de sesión con contraseña incorrecta (R1 · Esc. 4)",
+   "estado": "expected",
+   "resultado": "passed",
+   "segundos": 1.1
+  },
+  {
+   "titulo": "CP-03 · Inicio de sesión con campos vacíos (R1 · Esc. 4)",
+   "estado": "unexpected",
+   "resultado": "failed",
+   "segundos": 10.8
+  }
+ ],
+ "esperado": {
+  "pasaron": 2,
+  "fallaron": 8
+ },
+ "coincide_con_lo_esperado": true,
+ "humo_swag_labs": {
+  "pasaron": 1,
+  "fallaron": 0,
+  "segundos": 1.5
+ }
+}
